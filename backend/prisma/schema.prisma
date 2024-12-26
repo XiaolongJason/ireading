@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Book {
+  id          Int      @id @default(autoincrement())
+  title       String
+  author      String
+  coverImage  String
+  description String   @db.Text
+  ageRange    String
+  uploadDate  DateTime @default(now())
+  updateDate  DateTime @default(now()) @updatedAt
+  isDeleted   Boolean  @default(false)
+  pages       Page[]
+
+  @@index([isDeleted])
+}
+
+model Page {
+  id         Int      @id @default(autoincrement())
+  pageNumber Int
+  image      String
+  content    String?  @db.Text
+  bookId     Int
+  book       Book     @relation(fields: [bookId], references: [id])
+  isDeleted  Boolean  @default(false)
+
+  @@index([bookId])
+  @@index([isDeleted])
+}
